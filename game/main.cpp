@@ -1,10 +1,13 @@
-#include <iostream>
-#include <lib.h>
+#include <Game.h>
 
 
 int main() {
 
-    int x = helloFunc();
-    std::cout << x << std::endl;
+    Game* game = new Game();
+    game->title = "AI Testing";
+    game->width = 1024;
+    game->height = 768;
+    game->run();
+
     return 0;
 }
