@@ -24,7 +24,15 @@ namespace cdx {
     }
 
     void Input::onEvent(sf::Event& event) {
-        if (event.type == sf::Event::KeyReleased) {
+        if (event.type == sf::Event::MouseMoved) {
+            mListener->onMouseMove(event.mouseButton.x, event.mouseButton.y);
+        } else if (event.type == sf::Event::MouseButtonPressed) {
+            mListener->onMouseDown(event.mouseButton.x, event.mouseButton.y,
+                                   event.mouseButton.button == sf::Mouse::Left);
+        } else if (event.type == sf::Event::MouseButtonReleased) {
+            mListener->onMouseUp(event.mouseButton.x, event.mouseButton.y,
+                                 event.mouseButton.button == sf::Mouse::Left);
+        } else if (event.type == sf::Event::KeyReleased) {
             Key key = mKeyMap->getKey(event.key.code);
             if (mKeyStates[key]) {
                 mKeyStates[key] = false;
@@ -36,14 +44,6 @@ namespace cdx {
                 mKeyStates[key] = true;
                 mListener->onKeyDown(key);
             }
-        } else if (event.type == sf::Event::MouseButtonPressed) {
-            mListener->onMouseDown(event.mouseButton.x, event.mouseButton.y,
-                                   event.mouseButton.button == sf::Mouse::Left);
-        } else if (event.type == sf::Event::MouseButtonReleased) {
-            mListener->onMouseMove(event.mouseButton.x, event.mouseButton.y);
-        } else if (event.type == sf::Event::MouseMoved) {
-            mListener->onMouseUp(event.mouseButton.x, event.mouseButton.y,
-                                 event.mouseButton.button == sf::Mouse::Left);
         }
     }
 

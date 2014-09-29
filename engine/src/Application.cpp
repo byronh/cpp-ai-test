@@ -1,6 +1,5 @@
 #include <cdx/Application.h>
 #include <cdx/Input.h>
-#include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Event.hpp>
 
 
@@ -25,20 +24,24 @@ namespace cdx {
         cdx::runApplication(this);
     }
 
-    void runApplication(ApplicationListener* listener) {
+    void runApplication(ApplicationListener* applicationListener) {
 
         // Initialize SFML
-        sf::RenderWindow window(sf::VideoMode(listener->width, listener->height), listener->title);
         sf::Clock deltaClock;
-
-        //sf::CircleShape shape(100.f);
-        //shape.setFillColor(sf::Color::Green);
+        sf::ContextSettings contextSettings;
+        contextSettings.antialiasingLevel = applicationListener->samples;
+        sf::RenderWindow window(
+                sf::VideoMode(applicationListener->width, applicationListener->height),
+                applicationListener->title,
+                sf::Style::Close,
+                contextSettings
+        );
 
         // Initialize application
         Application& application = Application::getInstance();
         application.setWindow(&window);
         Input& input = Input::getInstance();
-        listener->onInitialize();
+        applicationListener->onInitialize();
 
         // Main loop
         while (window.isOpen()) {
@@ -48,23 +51,20 @@ namespace cdx {
                 if (event.type == sf::Event::Closed) {
                     application.exit();
                 } else if (event.type == sf::Event::LostFocus) {
-                    listener->onPause();
+                    applicationListener->onPause();
                 } else if (event.type == sf::Event::GainedFocus) {
-                    listener->onResume();
+                    applicationListener->onResume();
                 }
                 input.onEvent(event);
             }
 
-            sf::Time dt = deltaClock.restart();
-            listener->onUpdate(dt.asSeconds());
-
             window.clear();
-            //window.draw(shape);
-            listener->onRender();
+            sf::Time dt = deltaClock.restart();
+            applicationListener->onUpdate(dt.asSeconds());
             window.display();
         }
 
-        listener->onShutdown();
+        applicationListener->onShutdown();
 
     }
 }
